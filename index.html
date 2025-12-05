@@ -714,6 +714,7 @@
             const [newTask, setNewTask] = useState('');
             const [showSummary, setShowSummary] = useState(false);
             const [theme, setTheme] = useState('dark');
+            const [version, setVersion] = useState('');
 
             const [totalWorkSeconds, setTotalWorkSeconds] = useState(0);
             const [breakCount, setBreakCount] = useState(0);
@@ -726,6 +727,21 @@
             const lastTimerTypeRef = useRef('work');
 
             useEffect(() => {
+                fetch('VERSION.txt')
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text();
+                        }
+                        throw new Error('Файл версии не найден');
+                    })
+                    .then(text => {
+                        const ver = text.trim();
+                        setVersion(` v${ver}`);
+                    })
+                    .catch(error => {
+                        console.warn('Не удалось загрузить версию:', error);
+                    });
+
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const savedTheme = localStorage.getItem('appTheme');
 
@@ -1007,7 +1023,7 @@
                     <ThemeToggle theme={theme} onToggle={toggleTheme} />
 
                     <h1 className="text-center mb-4" style={{ color: 'var(--color-accent-gold)' }}>
-                        Православный Таймер
+                        Православный Таймер{version}
                     </h1>
 
                     <div className="timer-display">
